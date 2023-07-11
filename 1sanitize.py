@@ -3,21 +3,24 @@ import json
 import numpy as np
 
 # Read in the two CSV files
-agr_df = pd.read_csv('aggregation_query.csv')
+agr_dfff = pd.read_csv('alert_june_but_it_continues_with_xano_last_id.csv')
 races_df = pd.read_csv('races.csv')
+
+agr_df = agr_dfff.iloc[::-1]
+
 
 #Boolean Important values-------------------------------------------------
 agr_df['archive'] = agr_df['archive'].fillna(99).replace(
   { 
-    99: 2, 'nan': 2, '': 2,
+    99: '', 'nan': '', '': '',
     True: 1
   }
 )
 agr_df['found'] = agr_df['found'].fillna(99).replace(
   { 
-    99: 2, 'nan': 2, '': 2,
+    99: '', 'nan': '', '': '',
     True: 1,
-    False: 2,
+    False: '',
   }
 )
 agr_df['shareOnFb'] = agr_df['shareOnFb'].fillna(99).replace(
@@ -30,14 +33,14 @@ agr_df['shareOnFb'] = agr_df['shareOnFb'].fillna(99).replace(
 
 agr_df['boFixed'] = agr_df['boFixed'].fillna(99).replace(
   { 
-    99: 2, 'nan': 2, '': 2,
+    99: '', 'nan': '', '': '',
     True: 1,
     False: 2,
   }
 )
 agr_df['deleted'] = agr_df['deleted'].fillna(99).replace(
   { 
-    99: 2, 'nan': 2, '': 2,
+    99: '', 'nan': '', '': '',
     True: 1,
   }
 )
@@ -254,6 +257,16 @@ agr_df['boostId'] = agr_df['boostId'].fillna(99).replace(
   }
 )
 
+agr_df['isBoosted'] = agr_df['boostId'].fillna(99).replace(
+  {
+    99: '',
+    1: 1,
+    2: 1,
+    3: 1,
+  }
+)
+
+
 colors = { 
   99: '', 'nan': 'null', 'amarillo': 'null', 'Truite': 'null', 'purple': 'null',
   'Non renseignée': 0,
@@ -296,10 +309,10 @@ merged_race_df = agr_df.merge(races_df, left_on='animal.0.race', right_on='name_
 merged_race_df['animal.0.race'] = merged_race_df['id_race'].fillna(-1).astype(int).replace({-1: ''})
 merged_race_df['animal.0.type'] = merged_race_df['especeId_race'].fillna(-1).astype(int).replace({-1: ''})
 
-merged_race_df = merged_race_df.drop_duplicates(subset=['animal.0.collarColor', 'animal.0.name', 'animal.0.race', 'animal.0.sex', 'animal.0.type', 'message'], keep='first')
+#merged_race_df = merged_race_df.drop_duplicates(subset=['contact.email', 'animal.0.photo'], keep='first')
 agr_df = agr_df.dropna(subset=['animal.0.photo'])
 
-merged_race_df['id'] = range(1, len(merged_race_df) + 1)
+merged_race_df['id'] = range(3014070, 3014070 + len(merged_race_df))
 merged_race_df = merged_race_df[['id'] + [col for col in merged_race_df.columns if col != 'id']]
 
 
@@ -349,77 +362,88 @@ merged_race_df.rename(columns={'animal.0.birthday': 'animal.birthday'}, inplace=
 merged_race_df.rename(columns={'animal.0.signes': 'animal.signes'}, inplace=True)
 merged_race_df.rename(columns={'animal.0.source': 'animal.source'}, inplace=True)
 
-merged_race_df['isBoosted'] = pd.notnull(merged_race_df['boostId']).astype(int)
 
 merged_race_df['isCompleted'] = merged_race_df.apply(lambda row: 1 if pd.isnull(row['animal.name']) or pd.isnull(row['animal.photo']) or pd.isnull(row['animal.race']) or pd.isnull(row['animal.espece']) else None, axis=1)
 merged_race_df['whatMissing'] = merged_race_df.apply(lambda row: [col for col in ['animal.name', 'animal.photo', 'animal.race', 'animal.espece'] if pd.isnull(row[col])] or None, axis=1)
 
+merged_race_df.rename(columns={'address.county': 'county'}, inplace=True)
+merged_race_df.rename(columns={'address.city.codesPostaux': 'address.city.CP'}, inplace=True)
+
 #merged_race_df['animal.0.photo'] = merged_race_df['animal.0.photo'].str.strip('[]').str.replace('"', '')
 
 #taboption
-merged_race_df['tab_options'] = np.nan
+merged_race_df['tab_option'] = np.nan
+
+# is Boosted
+"""
+merged_race_df.loc[
+  (merged_race_df['isBoosted'] == 1) &
+  (merged_race_df['isDeleted'] != 1) &
+  (merged_race_df['archive'] != 1), 'tab_option'] = 3
+"""
+# Deleted
+merged_race_df.loc[
+  (merged_race_df['isDeleted'] == 1), 'tab_option'] = 8
+
+# Archivees
+merged_race_df.loc[
+  (merged_race_df['archive'] == 1), 'tab_option'] = 7
+
+# Resolue
+merged_race_df.loc[
+  (merged_race_df['isFound'] == 1) &
+  (merged_race_df['isDeleted'] != 1) &
+  (merged_race_df['archive'] != 1), 'tab_option'] = 6
+
+# En cours
+merged_race_df.loc[
+  (merged_race_df['isSharedOnFb'] == 1) & 
+  (merged_race_df['isFound'] != 1) &
+  (merged_race_df['isDeleted'] != 1) &
+  (merged_race_df['archive'] != 1), 'tab_option'] = 5
+
+
+# En cours de paiment
+merged_race_df.loc[
+  (merged_race_df['isSharedOnFb'] == 2) & 
+  (merged_race_df['isPaid'] == 2) &
+  (merged_race_df['payment_status'] == 1) &
+  (merged_race_df['isFound'] != 1) &
+  (merged_race_df['isDeleted'] != 1) &
+  (merged_race_df['archive'] != 1), 'tab_option'] = 2
+
 
 # Immediat a partager
 merged_race_df.loc[
   (merged_race_df['isSharedOnFb'] == 2) & 
   (merged_race_df['isPaid'] == 1) &
   (merged_race_df['payment_status'] == 2) &
-  (merged_race_df['isFound'] == 2) &
-  (merged_race_df['isDeleted'] == 2) &
-  pd.isnull(merged_race_df['isBoosted']) &
-  (merged_race_df['archive'] == 2), 'tab_options'] = 1
+  (merged_race_df['isFound'] != 1) &
+  (merged_race_df['isDeleted'] != 1) &
+  (merged_race_df['archive'] != 1), 'tab_option'] = 1
 
-# En cours de paiment
-merged_race_df.loc[
-  (merged_race_df['isSharedOnFb'] == 2) & 
-  pd.isnull(merged_race_df['isPaid']) &
-  (merged_race_df['payment_status'] == 1) &
-  (merged_race_df['isFound'] == 2) &
-  (merged_race_df['isDeleted'] == 2) &
-  pd.isnull(merged_race_df['isBoosted']) &
-  (merged_race_df['archive'] == 2), 'tab_options'] = 2
-
+  #pd.isnull(merged_race_df['payment_status']) &
 # Differes a partager
 merged_race_df.loc[
   (merged_race_df['isSharedOnFb'] == 2) & 
   (merged_race_df['isPaid'] == 2) &
-  pd.isnull(merged_race_df['payment_status']) &
-  (merged_race_df['isFound'] == 2) &
-  (merged_race_df['isDeleted'] == 2) &
-  (merged_race_df['archive'] == 2), 'tab_options'] = 4
+  (merged_race_df['payment_status'] != 1) &
+  (merged_race_df['payment_status'] != 2) &
+  (merged_race_df['isFound'] != 1) &
+  (merged_race_df['isDeleted'] != 1) &
+  (merged_race_df['archive'] != 1), 'tab_option'] = 4
 
-# En cours
-merged_race_df.loc[
-  (merged_race_df['isSharedOnFb'] == 1) & 
-  (merged_race_df['isFound'] == 2) &
-  (merged_race_df['isDeleted'] == 2) &
-  (merged_race_df['archive'] == 2), 'tab_options'] = 5
+merged_race_df = merged_race_df.reindex(columns=['id','_id','address.city.code','address.city.codeDepartement','address.city.nom','address.country','county','department','address.formatted_address','address.state','address.street','animal._id','animal.isAlive','animal.hasCollar','animal.collarColor','animal.collarKind','animal.collarType','animal.color1','animal.color2','animal.color3','animal.isCrossed','animal.hair','animal.isIdentified','animal.isMine','animal.name','animal.photo','animal.puce','animal.race','animal.sex','animal.silhouette','animal.size','animal.source','animal.surgery','animal.tatouage','animal.espece','animal.type_autres','animal.userId','animal.userPseudo','animalId','boFixed','contact.email','contact.facebook','contact.phone','coords.lat','coords.lng','country','date','dateCreated','datePublished','deletedDate','fromEmail','message','offerId','postOnFb','publifb_description','shareBy','shareDate','state','Alert_type','userId','address.city','animal.0.activation_code','animal.birthday','animal.0.code','animal.0.medaillon_code','boostDate','foundDate','foundMessage','messageFb','publifb_city','status','takenBy','takenDate','id_race','especeId_race','_id_race','name_race','isPosted_onFb','isCompleted','whatMissing','archiveDate','boostId','deletedBy','foundBy','payment_date','plannedDate','source','tab_option','isBoosted','isSharedOnFb','isPaid','payment_status','isFound','isDeleted','archive'])
 
-# Resolue
-merged_race_df.loc[
-  (merged_race_df['isFound'] == 1) &
-  (merged_race_df['isDeleted'] == 2) &
-  (merged_race_df['archive'] == 2), 'tab_options'] = 6
+merged_race_df.to_csv('latest_sanitized.csv', index=False)
 
-# Archivees
-merged_race_df.loc[
-  (merged_race_df['archive'] == 1), 'tab_options'] = 7
+"""
+rows_per_file = 150000
+num_files = -(-len(merged_race_df) // rows_per_file)  # Ceiling division
 
-# Deleted
-merged_race_df.loc[
-  (merged_race_df['isDeleted'] == 1), 'tab_options'] = 8
-
-# Resolue
-merged_race_df.loc[
-  (merged_race_df['isPaid'] == 1) &
-  pd.isnull(merged_race_df['isBoosted']) &
-  (merged_race_df['isDeleted'] == 2) &
-  (merged_race_df['archive'] == 2), 'tab_options'] = 3
-
-
-
-#merged_race_df = merged_race_df.reindex(columns=['id', 'isCompleted', 'whatMissing', 'Alert_type', 'department', 'boFixed', 'date', 'datePublished', 'dateCreated', 'message', 'isPosted_onFb', 'postOnFb', 'boostDate', 'boostId', 'isPaid', 'payment_date', 'payment_status', 'address.formatted_address', 'address.city', 'country', 'coords.lat', 'coords.lng', 'contact.email', 'contact.facebook', 'contact.phone', 'archive', 'archiveDate', 'isFound', 'foundBy', 'foundDate', 'foundMessage', 'shareBy', 'shareDate', 'isSharedOnFb', 'takenBy', 'takenDate', 'isDeleted', 'deletedBy', 'deletedDate', 'source', 'statsView', 'fromEmail', 'messageFb', 'plannedDate', 'publifb_description', 'state', 'offerId', 'animal._id', 'animal.name', 'animal.photo', 'animal.sex', 'animal.espece', 'animal.race', 'animal.color1', 'animal.color2', 'animal.color3', 'animal.birthday', 'animal.isAlive', 'animal.isCrossed', 'animal.isMine', 'animal.isIdentified', 'animal.surgery', 'animal.puce', 'animal.hair', 'animal.signes', 'animal.silhouette', 'animal.size', 'animal.tatouage', 'animal.source', 'animal.hasCollar', 'animal.collarColor', 'animal.collarType', 'animal.collarKind', 'animalId', 'animal.userPseudo', 'animal.userId', 'userId', 'animal.type_autres', '_id', 'id_race', 'especeId_race', '_id_race', 'name_race'])
-
-merged_race_df.to_csv('sanitized_no_duplicates.csv', index=False)
-
-
+for i in range(num_files):
+    start = i * rows_per_file
+    end = (i + 1) * rows_per_file
+    df_part = merged_race_df[start:end]
+    df_part.to_csv(f'z_splet_{i+1}.csv', index=False)
+"""
