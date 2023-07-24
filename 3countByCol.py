@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Read in the CSV file
-df = pd.read_csv('sanitized_no_duplicates.csv')
+df = pd.read_csv('latest_sanitized_all.csv')
 
 # Get the number of filled rows for each column
 num_filled_rows = df.count()

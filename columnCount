@@ -1,25 +1,25 @@
 __v                                4968
 _id                             3002665
-address_precision                 58387
-address.city                    2681344
-address.city.centre.type        2590755
-address.city.code               2590755
-address.city.codeDepartement    2590755
-address.city.codeRegion         2590755
-address.city.codesPostaux.0     2590755
-address.city.nom                2590755
-address.city.population         2590691
-address.country                   57941
-address.county                    80176
-address.dpt                     2590754
-address.formatted_address       2891256
-address.state                     80245
-address.street                  2679194
+- address_precision                 58387
++ address.city                    2681344
++ address.city.centre.type        2590755
++ address.city.code               2590755
++ address.city.codeDepartement    2590755
++ address.city.codeRegion         2590755
++ address.city.codesPostaux.0     2590755
++ address.city.nom                2590755
++ address.city.population         2590691
++ address.country                   57941
++ address.county                    80176
++ address.dpt                     2590754
+- address.formatted_address       2891256
++ address.state                     80245
++ address.street                  2679194
 animal.0._id                    2988148
 animal.0.activation_code              1
 animal.0.alive                  1185121
-- animal.0.birthday                  2102
-- animal.0.boFixed                  10344
+animal.0.birthday                  2102
++ animal.0.boFixed                  10344
 animal.0.code                         1
 animal.0.collar                 2590653
 animal.0.collarColor             657148
@@ -35,16 +35,16 @@ animal.0.hair                   2487887
 animal.0.identified              100524
 animal.0.medaillon_code               4
 animal.0.medaillondId                 0
-- animal.0.mine                     19016
++ animal.0.mine                     19016
 animal.0.name                   1564233
-- animal.0.photo                  2750263
++ animal.0.photo                  2750263
 animal.0.puce                   2636015
 animal.0.race                   2820981
 animal.0.sex                    2843595
 animal.0.signes                  132748
 animal.0.silhouette             2552277
 animal.0.size                   2541474
-- animal.0.source                   22249
++ animal.0.source                   22249
 animal.0.surgery                1946761
 animal.0.tatouage               2633946
 animal.0.type                   2968525
@@ -57,7 +57,7 @@ animalId                        3002602
 archive                          837438
 archiveDate                      482437
 boFixed                          100891
-- boostDate                         18864
++ boostDate                         18864
 boostId                           82787
 contact.email                   2655640
 contact.facebook                2656437
@@ -68,9 +68,9 @@ country                          201138
 date                            3002582
 dateCreated                     1920003
 datePublished                   3000206
-- deleted                          100414
-- deletedBy                        100414
-- deletedDate                        100414
++ deleted                          100414
++ deletedBy                        100414
++ deletedDate                        100414
 dpt                             2598594
 endType                            7211
 externalId                        22302
@@ -78,11 +78,11 @@ found                           3002662
 foundBy                               5
 foundDate                        825752
 foundMessage                     821004
-- fromEmail                          8307
++ fromEmail                          8307
 intesting                            44
 isSelected                          267
 message                         1609883
-- messageFb                        145014
++ messageFb                        145014
 notes.0.date                      26850
 notes.0.email                     26850
 notes.0.note                      26779
@@ -101,7 +101,7 @@ shareOnFb                       2247825
 source                          2981939
 state                            201139
 stats_view                            2
-- statsView                        457519
++ statsView                        457519
 status                              257
 takenBy                          119091
 takenDate                        119091

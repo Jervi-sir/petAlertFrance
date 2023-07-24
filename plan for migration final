@@ -8,3 +8,12 @@
 
 - resanitize the old data before june 01 
 
+
+- export before june, without need for address_city_name
+ - preferably the 2023-06-28T19:35:21.386+0000
+- delete duplication
+- export comments
+    - delete comment of alert that doesnt exists
+
+- 
+

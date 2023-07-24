@@ -3,11 +3,10 @@ import json
 import numpy as np
 
 # Read in the two CSV files
-agr_dfff = pd.read_csv('alert_june_but_it_continues_with_xano_last_id.csv')
+agr_df = pd.read_csv('aggregation_query.csv', dtype={'address.city': str})
 races_df = pd.read_csv('races.csv')
 
-agr_df = agr_dfff.iloc[::-1]
-
+#agr_df = agr_dfff.iloc[::-1]
 
 #Boolean Important values-------------------------------------------------
 agr_df['archive'] = agr_df['archive'].fillna(99).replace(
@@ -35,7 +34,7 @@ agr_df['boFixed'] = agr_df['boFixed'].fillna(99).replace(
   { 
     99: '', 'nan': '', '': '',
     True: 1,
-    False: 2,
+    False: '',
   }
 )
 agr_df['deleted'] = agr_df['deleted'].fillna(99).replace(
@@ -75,7 +74,7 @@ agr_df['animal.0.mine'] = agr_df['animal.0.mine'].fillna(99).replace(
 )
 agr_df['animal.0.crossing'] = agr_df['animal.0.crossing'].fillna(99).replace(
   { 
-    99: '', 'nan': 'null',
+    99: 3, 'nan': 3,
     'unknown': 3,
     'Oui': 1,
     'Non': 2
@@ -115,9 +114,9 @@ agr_df['type'] = agr_df['type'].fillna(99).replace(
     'stolen': 5,
   }
 )
-agr_df['animal.0.type'] = agr_df['animal.0.type'].fillna(99).replace(
+agr_df['animal.0.type'] = agr_df['animal.0.type'].replace(
   { 
-    99: '', 'nan': 'null',
+    #99: '', 'nan': 'null',
     'Chat': 1, 
     'Chien': 2,
     'Autres': 3,
@@ -125,7 +124,7 @@ agr_df['animal.0.type'] = agr_df['animal.0.type'].fillna(99).replace(
 )
 agr_df['animal.0.sex'] = agr_df['animal.0.sex'].fillna(99).replace(
   { 
-    99: '', 'nan': 'null', 'unknown': 3,
+    99: 3, 'nan': 3, 'unknown': 3,
     'Mâle': 1,
     'Femelle': 2,
   }
@@ -212,6 +211,20 @@ agr_df['animal.0.collarColor'] = agr_df['animal.0.collarColor'].fillna(99).repla
   }
 )
 
+
+agr_df['address.country'] = agr_df['address.country'].replace(
+  { 
+    #99: '', 'nan': 'null',
+    '5c7d9bd6fb6fc072012dc8ed': 'CHE',
+    '5cb5de1e9a00b30148045b87': 'LUX',
+    '5e7b9cbe793894d9143f4421': 'CHN',
+    '5d52e952edffc00c943ef6f4': 'ESP',
+    '5c91f7f19c1dce050f1c2449': 'BEL',
+    '5c7d9c11fb6fc072012dc8f7': 'USA',
+    '5d9b6626edffc00c943ef751': 'GBR',
+    '5c7d9c9dfb6fc072012dc9f8': 'FRA'
+  }
+)
 agr_df['offerId'] = agr_df['offerId'].fillna(99).replace(
   { 
     99: '', 'nan': 'null',
@@ -250,7 +263,7 @@ agr_df['animal.0.tatouage'] = agr_df['animal.0.tatouage'].fillna(99).replace(
 )
 agr_df['boostId'] = agr_df['boostId'].fillna(99).replace(
   { 
-    99: '', 'nan': 'null', 'unknown': 3,
+    99: '', 'nan': 'null', 'unknown': 'null',
     '5cc58fb99a00b30148045beb': 1,
     '5cc58fed9a00b30148045bec': 2,
     '5cc590019a00b30148045bed': 3,
@@ -265,8 +278,7 @@ agr_df['isBoosted'] = agr_df['boostId'].fillna(99).replace(
     3: 1,
   }
 )
-
-
+"""
 colors = { 
   99: '', 'nan': 'null', 'amarillo': 'null', 'Truite': 'null', 'purple': 'null',
   'Non renseignée': 0,
@@ -295,6 +307,41 @@ colors = {
   'abigarrado': 24, 'Abigarrado': 24,
   'Écaille de tortue diluée': 25, 'Ecaille de tortue diluée': 25, 'ecaille de tortue diluée': 25, 'page_newpost_Chat_Femelle_Écaille de tortue diluée': 25, 'écaille de tortue dilué': 25, 'écaille de tortue diluée': 25,
 }
+"""
+colors = { 
+  99: '', 'nan': 'null', 'amarillo': 'null', 'Truite': 'null', 'purple': 'null',
+  'Non renseignée': 16,
+  'Azul merle': 1, 'Azul': 1, 'azul merle': 1, 'azul': 1,
+  'Bleu': 1, 'Bleu merle': 1, 'Bleue merle': 1, 'Bleue': 1, 'bleue': 1, 'bleu merle': 1, 'Blue merle': 1, 'Blue': 1, 'blue': 1,
+  'Noir': 2, 'Noire': 2, 'noir': 2, 'noire': 2, 'page_newpost_Chien_Femelle_Noir': 2, 'page_newpost_Chien_Mâle_Noir': 2, 'noir et fauve': 2, 'Black': 2, 'black': 2, 'Negra': 2, 'Negro': 2, 'Noi': 2, 'negra': 2, 'negro': 2,
+  'Blanc': 3, 'Blanche': 3, 'blanco': 3, 'blanca': 3, 'blanc': 3, 'blanc et marron': 3, 'blanche': 3, 'noir et blanc': 3, 'Noir et blanc': 3, 'BLANC': 3, 'Tigre et blanc': 3, 'blanc et gris': 3, 'beige et blanc': 3, 'Blanco': 3, 'page_newpost_Chien_Mâle_Blanc': 3, 'Blanca': 3, 'Blanc et Noir': 3, 'marron et blanc': 3, 'Blanc et roux': 3, 'White': 3, 'white': 3, 'Blan': 3, 'Harlequin': 3, 'Isabelle': 3, 'harlequin': 3, 'isabelle': 3, 'angora Anglais': 3,
+  'Marron': 5, 'marron': 5, 'marron beige': 5, 'Marron clair': 5, 'Brown': 5, 'brown': 5, 'Marrón': 5, 'chocolat': 5, 'crème': 5, 'marrón': 5,
+  
+  'Calico': 7, 'Calicó Diluido': 7, 'Carey Diluido': 7, 'Carey': 7, 'Creme': 7, 'Crème / beige': 7, 'BEIGE': 7, 'Beige': 7, 'beige': 7, 'Diluted Calico': 7, 'Diluted Tortoiseshell': 7,
+  'Tortoiseshell': 8, 'tortoiseshell': 8, 'calico': 8, 'carey': 8,
+
+  'FAUVE': 9, 'Fauve': 9, 'fauve': 9, 'Fuego': 9, 'fuego': 9,
+  'Gris': 10, 'Grise': 10, 'gris': 10, 'grise': 10, 'page_newpost_Chien_Mâle_Gris': 10, 'Gris foncé': 10, 'Grey': 10, 'grey': 10,
+  'Jaune': 11, 'jaune': 11, 'JAUNE': 11, 'Yellow': 11, 'yellow': 11,
+  'Merle': 13, 'arlequin': 13, 'atigrada': 13, 'atigrado': 13, 'Arlequin': 13, 'Atigrado': 13,
+  'Orange': 17, 'orange': 17,
+  'ROUX': 18, 'Roux': 18, 'Rojo merle': 18, 'Rojo': 18, 'page_newpost_Chat_Mâle_Roux': 18, 'red': 18, 'rojo merle': 18, 'rojo': 18, 'rousse': 18, 'roux': 18 ,
+  'Sable': 20, 'sable': 20, 'Alezan': 20,
+  'Tigré': 21, 'Tigre': 21, 'TIGRE': 21, 'tigrée grise': 21, 'Tigrée': 21, 'tigrée et blanche': 21, 'rayée': 21, 'tigré gris': 21, 'tigré marron': 21, 'Tigré gris': 21, 'tigré et blanc': 21, 'tigrée et blanche': 21, 'Tigré et blanc': 21, 'Tigrée et blanche': 21, 'blanche et tigrée': 21, 'blanc et tigré': 21, 'tabby': 21, 'ti': 21, 'tigre': 21, 'tigré': 21, 'tigrée': 21, 'tan': 21, 'Tabby': 21, 'Tan': 21, 'Tawny ': 21, 'Tawny': 21,
+  'Tricolore dilué': 24, 'Tricolore diluée': 24, 'Tricolore diluée': 24, 'tricolore diluée': 24,
+  'Tricolore': 24, 'Tricolor': 24, 'TRICOLORE': 24, 'omnicolore': 24, 'tricolor': 24, 'tricolore': 24,
+  
+  'Vert': 25, 'Verte': 25, 'vert': 25, 'verte': 25, 'Green': 25, 'green': 25, 'Verde': 25, 'verde': 25,
+
+  'Rouge': 26, 'Rouge merle': 26, 'rouge merle': 26, 'rouge': 26, 'Red merle': 26, 'Red': 26, 
+
+  'Brindle': 5, 'Bringé': 5, 'Bringée': 5, 'Brun': 5, 'brindle': 5, 'bringé': 5, 'bringée': 5, 'brun': 5, 'brune': 5,
+  'Ecaille de tortue': 8, 'Écaille de tortue': 8, 'ecaille de tortue': 8, 'écaille de tortue': 8, 'écaille de,tortue': 8,
+  'Naranja': 18, 'Ginger': 18, 'naranja': 18,
+  'Rose': 27, 'Pink': 27, 'Rosa': 27, 'Rosette': 27, 'Rousse foncée': 27, 'Rousse': 27, 'pink': 27, 'rosa': 27,
+  'abigarrado': 24, 'Abigarrado': 24,
+  'Écaille de tortue diluée': 8, 'Ecaille de tortue diluée': 8, 'ecaille de tortue diluée': 8, 'page_newpost_Chat_Femelle_Écaille de tortue diluée': 8, 'écaille de tortue dilué': 8, 'écaille de tortue diluée': 8,
+}
 agr_df['animal.0.color1'] = agr_df['animal.0.color1'].fillna(99).replace(colors)
 agr_df['animal.0.color2'] = agr_df['animal.0.color2'].fillna(99).replace(colors)
 agr_df['animal.0.color3'] = agr_df['animal.0.color3'].fillna(99).replace(colors)
@@ -307,13 +354,15 @@ races_df['name_race'] = races_df['name_race'].str.lower().str.replace(' ', '')
 
 merged_race_df = agr_df.merge(races_df, left_on='animal.0.race', right_on='name_race', how='left')
 merged_race_df['animal.0.race'] = merged_race_df['id_race'].fillna(-1).astype(int).replace({-1: ''})
-merged_race_df['animal.0.type'] = merged_race_df['especeId_race'].fillna(-1).astype(int).replace({-1: ''})
+#merged_race_df['animal.0.type'] = merged_race_df['especeId_race'].fillna(-1).astype(int).replace({-1: ''})
+merged_race_df = merged_race_df[merged_race_df['animal.0.type'].notna()]
 
-#merged_race_df = merged_race_df.drop_duplicates(subset=['contact.email', 'animal.0.photo'], keep='first')
-agr_df = agr_df.dropna(subset=['animal.0.photo'])
+merged_race_df = merged_race_df.drop_duplicates(subset=['animal.0.name', 'animal.0.race', 'contact.email', 'animal.0.photo'], keep='first')
+#agr_df = agr_df.dropna(subset=['animal.0.photo'])
 
-merged_race_df['id'] = range(3014070, 3014070 + len(merged_race_df))
+merged_race_df['id'] = range(1, 1 + len(merged_race_df))
 merged_race_df = merged_race_df[['id'] + [col for col in merged_race_df.columns if col != 'id']]
+
 
 
 def clean_string(s):
@@ -324,7 +373,6 @@ def clean_string(s):
 #agr_df['animal.0.photo'] = agr_df['animal.0.photo'].apply(clean_string)
 
 merged_race_df['isPosted_onFb'] = merged_race_df['postOnFb'].notnull().astype(int)
-
 
 merged_race_df.rename(columns={'animal.0._id': 'animal._id'}, inplace=True)
 merged_race_df.rename(columns={'animal.0.alive': 'animal.isAlive'}, inplace=True)
@@ -371,8 +419,14 @@ merged_race_df.rename(columns={'address.city.codesPostaux': 'address.city.CP'}, 
 
 #merged_race_df['animal.0.photo'] = merged_race_df['animal.0.photo'].str.strip('[]').str.replace('"', '')
 
+merged_race_df['country'] = merged_race_df['country'].fillna('FRA')
+
 #taboption
 merged_race_df['tab_option'] = np.nan
+
+merged_race_df['animal.race'] = merged_race_df.apply(
+    lambda row: row['animal.espece'] if row['animal.race'] == '' else row['animal.race'], axis=1
+)
 
 # is Boosted
 """
@@ -433,17 +487,40 @@ merged_race_df.loc[
   (merged_race_df['isDeleted'] != 1) &
   (merged_race_df['archive'] != 1), 'tab_option'] = 4
 
-merged_race_df = merged_race_df.reindex(columns=['id','_id','address.city.code','address.city.codeDepartement','address.city.nom','address.country','county','department','address.formatted_address','address.state','address.street','animal._id','animal.isAlive','animal.hasCollar','animal.collarColor','animal.collarKind','animal.collarType','animal.color1','animal.color2','animal.color3','animal.isCrossed','animal.hair','animal.isIdentified','animal.isMine','animal.name','animal.photo','animal.puce','animal.race','animal.sex','animal.silhouette','animal.size','animal.source','animal.surgery','animal.tatouage','animal.espece','animal.type_autres','animal.userId','animal.userPseudo','animalId','boFixed','contact.email','contact.facebook','contact.phone','coords.lat','coords.lng','country','date','dateCreated','datePublished','deletedDate','fromEmail','message','offerId','postOnFb','publifb_description','shareBy','shareDate','state','Alert_type','userId','address.city','animal.0.activation_code','animal.birthday','animal.0.code','animal.0.medaillon_code','boostDate','foundDate','foundMessage','messageFb','publifb_city','status','takenBy','takenDate','id_race','especeId_race','_id_race','name_race','isPosted_onFb','isCompleted','whatMissing','archiveDate','boostId','deletedBy','foundBy','payment_date','plannedDate','source','tab_option','isBoosted','isSharedOnFb','isPaid','payment_status','isFound','isDeleted','archive'])
+#merged_race_df = merged_race_df.reindex(columns=['id','_id','address.city.code','address.city.codeDepartement','address.city.nom','address.country','county','department','address.formatted_address','address.state','address.street','animal._id','animal.isAlive','animal.hasCollar','animal.collarColor','animal.collarKind','animal.collarType','animal.color1','animal.color2','animal.color3','animal.isCrossed','animal.hair','animal.isIdentified','animal.isMine','animal.name','animal.photo','animal.puce','animal.race','animal.sex','animal.silhouette','animal.size','animal.source','animal.surgery','animal.tatouage','animal.espece','animal.type_autres','animal.userId','animal.userPseudo','animalId','boFixed','contact.email','contact.facebook','contact.phone','coords.lat','coords.lng','country','date','dateCreated','datePublished','deletedDate','fromEmail','message','offerId','postOnFb','publifb_description','shareBy','shareDate','state','Alert_type','userId','address.city','animal.0.activation_code','animal.birthday','animal.0.code','animal.0.medaillon_code','boostDate','foundDate','foundMessage','messageFb','publifb_city','status','takenBy','takenDate','id_race','especeId_race','_id_race','name_race','isPosted_onFb','isCompleted','whatMissing','archiveDate','boostId','deletedBy','foundBy','payment_date','plannedDate','source','tab_option','isBoosted','isSharedOnFb','isPaid','payment_status','isFound','isDeleted','archive'])
 
-merged_race_df.to_csv('latest_sanitized.csv', index=False)
+def is_json(myjson):
+    if myjson is None or pd.isna(myjson):  # pd.isna handles NaN values
+        return False
+    if isinstance(myjson, str):
+        try:
+            json_object = json.loads(myjson)
+        except ValueError as e:
+            return False
+        return True
+    else:
+        return False
 
+def format_content(content):
+    if is_json(content):
+        return content
+    else:
+        return None if content is None or pd.isna(content) else '{ "nom" : "%s" }' % content
+
+for idx, row in merged_race_df.iterrows():
+    if not is_json(row['address.city']):
+        merged_race_df.at[idx, 'address.city.nom'] = row['address.city']
+
+merged_race_df['address.city'] = merged_race_df['address.city'].apply(format_content)
+
+merged_race_df.to_csv('latest_sanitized_all.csv', index=False)
 """
-rows_per_file = 150000
+rows_per_file = 50000
 num_files = -(-len(merged_race_df) // rows_per_file)  # Ceiling division
 
 for i in range(num_files):
-    start = i * rows_per_file
-    end = (i + 1) * rows_per_file
-    df_part = merged_race_df[start:end]
-    df_part.to_csv(f'z_splet_{i+1}.csv', index=False)
+  start = i * rows_per_file
+  end = (i + 1) * rows_per_file
+  df_part = merged_race_df[start:end]
+  df_part.to_csv(f'z_splet2023_{i+1}.csv', index=False)
 """
