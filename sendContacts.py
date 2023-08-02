@@ -11,7 +11,7 @@ df = pd.read_csv('contacts.csv')
 print("csv loaded")  # Display the current index
 
 # Limit to the first 50000 rows
-df = df.iloc[100000:600000]
+df = df.iloc[1128300:1700000]
 
 # Add a new column isDone
 df['isDone'] = 0

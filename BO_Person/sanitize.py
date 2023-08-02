@@ -2,7 +2,7 @@ import pandas as pd
 import re
 
 df_A = pd.read_csv('BO_Client_Person.csv')
-df_B = pd.read_csv('export_All-Users_2023-07-18_07-55-06.csv')
+df_B = pd.read_csv('export_All-Users_2023-07-28_18-55-22.csv')
 
 # Convert to lower case and strip spaces
 df_A['email'] = df_A['email'].str.lower().str.strip()
