@@ -1,7 +1,7 @@
 import pandas as pd
 
-input_file = 'July15ToJuly30.csv'
-output_file = 'July15ToJuly30_1.csv'
+input_file = 'alert_to_upload_27July_02_august.csv'
+output_file = 'alert_to_upload_27July_02_august_added_onecsv'
 
 df = pd.read_csv(input_file)
 
