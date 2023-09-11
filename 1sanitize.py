@@ -1,10 +1,24 @@
 import pandas as pd
 import json
 import numpy as np
+import math
 
+id_start = 2720220
 # Read in the two CSV files
-agr_df = pd.read_csv('aggregation_query.csv', dtype={'address.city': str})
+agr_df = pd.read_csv('reversed_data.csv', dtype={'address.city': str})
 races_df = pd.read_csv('races.csv')
+
+def remove_spaces_in_json(json_str):
+  if isinstance(json_str, str):
+    try:
+      parsed_json = json.loads(json_str)
+      return json.dumps(parsed_json, separators=(',', ':'))
+    except json.JSONDecodeError:
+      return json_str  # return the original string if it's not valid JSON
+  elif pd.isna(json_str):
+    return json_str  # return NaN as is
+  else:
+    return json_str  # or handle other types as you see fit
 
 #agr_df = agr_dfff.iloc[::-1]
 
@@ -360,7 +374,7 @@ merged_race_df = merged_race_df[merged_race_df['animal.0.type'].notna()]
 merged_race_df = merged_race_df.drop_duplicates(subset=['animal.0.name', 'animal.0.race', 'contact.email', 'animal.0.photo'], keep='first')
 #agr_df = agr_df.dropna(subset=['animal.0.photo'])
 
-merged_race_df['id'] = range(1, 1 + len(merged_race_df))
+merged_race_df['id'] = range(id_start, id_start + len(merged_race_df))
 merged_race_df = merged_race_df[['id'] + [col for col in merged_race_df.columns if col != 'id']]
 
 
@@ -410,6 +424,7 @@ merged_race_df.rename(columns={'animal.0.birthday': 'animal.birthday'}, inplace=
 merged_race_df.rename(columns={'animal.0.signes': 'animal.signes'}, inplace=True)
 merged_race_df.rename(columns={'animal.0.source': 'animal.source'}, inplace=True)
 
+merged_race_df['address.city'] = merged_race_df['address.city'].apply(remove_spaces_in_json)
 
 merged_race_df['isCompleted'] = merged_race_df.apply(lambda row: 1 if pd.isnull(row['animal.name']) or pd.isnull(row['animal.photo']) or pd.isnull(row['animal.race']) or pd.isnull(row['animal.espece']) else None, axis=1)
 merged_race_df['whatMissing'] = merged_race_df.apply(lambda row: [col for col in ['animal.name', 'animal.photo', 'animal.race', 'animal.espece'] if pd.isnull(row[col])] or None, axis=1)
@@ -524,3 +539,5 @@ for i in range(num_files):
   df_part = merged_race_df[start:end]
   df_part.to_csv(f'z_splet2023_{i+1}.csv', index=False)
 """
+
+
